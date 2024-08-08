@@ -51,10 +51,10 @@ setLegend(
 ................
 ................
 ................
-.......222......
-......2...2.....
-......2.2.2.....
-.......222......
+.......000......
+......0...0.....
+......0.0.0.....
+.......000......
 ................
 ................
 ................
@@ -74,9 +74,9 @@ const levels = [
 pw.
 ..g`,
   map`
-p.w
-.wg
-..w`,
+p..
+.w.
+..g`,
   map`
 p.w..
 ..w..
@@ -84,9 +84,9 @@ p.w..
 .w...
 ...w.`,
   map`
-p..ww
+p..w.
+.w...
 .w.wg
-.w.w.
 ....w
 w....`,
   map`
@@ -97,19 +97,19 @@ pw...
 ....w`,
   map`
 p.w..
-w.w..
-.w...
+w....
+.w.w.
 .wg..
 .w.w.`,
   map`
 p.w.w
 ..w..
-ww.w.
+.w.w.
 ..wg.
 ...w.`,
   map`
 p.....
-w.w...
+.w....
 ...w..
 ...w.g
 .w.w..
@@ -143,18 +143,21 @@ afterInput(() => {
   const playerPos = getFirst(player);
   const goalPos = getFirst(goal);
 
-  // checks if player reached the goal
   if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
-    level += 1;
-    if (level < levels.length) {
-      setMap(levels[level]);
-    } else {
-      addText("You Won!", { x: 6, y: 6, color: color`2` });
-    }
+    addText("Next Level!", { x: 5, y: 6, color: color`3` });
+    setTimeout(() => {
+      level += 1;
+      if (level < levels.length) {
+        clearText();
+        setMap(levels[level]);
+      } else {
+        clearText();
+        addText("You Won!", { x: 6, y: 6, color: color`3` });
+      }
+    }, 1000);
   }
 
-  // checks if player touched a wall
   if (getTile(playerPos.x, playerPos.y).filter(t => t.type === wall).length > 0) {
-    setMap(levels[level]); // restarts
+    setMap(levels[level]);
   }
 });
