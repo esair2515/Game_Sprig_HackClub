@@ -82,7 +82,39 @@ p.w..
 ..w..
 .w..g
 .w...
-...w.`
+...w.`,
+  map`
+p..ww
+.w.wg
+.w.w.
+....w
+w....`,
+  map`
+pw...
+.w...
+.w.w.
+.w.wg
+....w`,
+  map`
+p.w..
+w.w..
+.w...
+.wg..
+.w.w.`,
+  map`
+p.w.w
+..w..
+ww.w.
+..wg.
+...w.`,
+  map`
+p.....
+w.w...
+...w..
+...w.g
+.w.w..
+.w.w..
+...w.w`
 ];
 
 setMap(levels[level]);
@@ -111,6 +143,7 @@ afterInput(() => {
   const playerPos = getFirst(player);
   const goalPos = getFirst(goal);
 
+  // checks if player reached the goal
   if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
     level += 1;
     if (level < levels.length) {
@@ -118,5 +151,10 @@ afterInput(() => {
     } else {
       addText("You Won!", { x: 6, y: 6, color: color`2` });
     }
+  }
+
+  // checks if player touched a wall
+  if (getTile(playerPos.x, playerPos.y).filter(t => t.type === wall).length > 0) {
+    setMap(levels[level]); // restarts
   }
 });
