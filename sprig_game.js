@@ -11,6 +11,9 @@ https://sprig.hackclub.com/gallery/getting_started
 const player = "p";
 const wall = "w";
 const goal = "g";
+const background = "b"; // Background for the home screen
+
+let gameStarted = false;
 
 setLegend(
   [ player, bitmap`
@@ -63,10 +66,25 @@ setLegend(
 ................
 ................
 ................
+................` ],
+  [ background, bitmap`
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
 ................` ]
 );
-
-setSolids([wall]);
 
 let level = 0;
 const levels = [
@@ -103,61 +121,88 @@ w....
 .w.w.`,
   map`
 p.w.w
-..w..
-.w.w.
-..wg.
-...w.`,
+.w...
+...w.
+wwwg.
+..www`,
   map`
-p.....
-.w....
+p.w...
+.w..w.
 ...w..
-...w.g
-.w.w..
-.w.w..
+.wwwwg
+.w...w
+.w.ww.
 ...w.w`
 ];
 
-setMap(levels[level]);
+function startGame() {
+  gameStarted = true;
+  setMap(levels[level]);
+  addText(`Level: ${level + 1}`, { x: 1, y: 1, color: color`3` });
+}
 
-setPushables({
-  [player]: []
+function showHomeScreen() {
+  setMap(map`
+bbbbb
+bbbbb
+bbbbb
+bbbbb
+bbbbb`);
+  clearText();
+  addText("Welcome", { x: 5, y: 5, color: color`3` });
+  addText("Press L to Play", { x: 3, y: 8, color: color`3` });
+}
+
+onInput("l", () => {
+  if (!gameStarted) {
+    startGame();
+  }
 });
 
 onInput("w", () => {
-  getFirst(player).y -= 1;
+  if (gameStarted) getFirst(player).y -= 1;
 });
 
 onInput("a", () => {
-  getFirst(player).x -= 1;
+  if (gameStarted) getFirst(player).x -= 1;
 });
 
 onInput("s", () => {
-  getFirst(player).y += 1;
+  if (gameStarted) getFirst(player).y += 1;
 });
 
 onInput("d", () => {
-  getFirst(player).x += 1;
+  if (gameStarted) getFirst(player).x += 1;
 });
 
 afterInput(() => {
-  const playerPos = getFirst(player);
-  const goalPos = getFirst(goal);
+  if (gameStarted) {
+    clearText();
+    addText(`Level: ${level + 1}`, { x: 1, y: 1, color: color`3` });
 
-  if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
-    addText("Next Level!", { x: 5, y: 6, color: color`3` });
-    setTimeout(() => {
-      level += 1;
-      if (level < levels.length) {
-        clearText();
-        setMap(levels[level]);
-      } else {
-        clearText();
-        addText("You Won!", { x: 6, y: 6, color: color`3` });
-      }
-    }, 1000);
-  }
+    const playerPos = getFirst(player);
+    const goalPos = getFirst(goal);
 
-  if (getTile(playerPos.x, playerPos.y).filter(t => t.type === wall).length > 0) {
-    setMap(levels[level]);
+    if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
+      addText("Next Level!", { x: 5, y: 6, color: color`3` });
+      setTimeout(() => {
+        level += 1;
+        if (level < levels.length) {
+          clearText();
+          setMap(levels[level]);
+          addText(`Level: ${level + 1}`, { x: 1, y: 1, color: color`3` });
+        } else {
+          clearText();
+          addText("You Won!", { x: 6, y: 6, color: color`3` });
+        }
+      }, 1000);
+    }
+
+    if (getTile(playerPos.x, playerPos.y).filter(t => t.type === wall).length > 0) {
+      setMap(levels[level]);
+    }
   }
 });
+
+// Show the home screen when the game starts
+showHomeScreen();
